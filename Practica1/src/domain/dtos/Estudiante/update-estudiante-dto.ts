@@ -1,0 +1,42 @@
+export class UpdateEstudianteDto {
+
+  private constructor(
+    public readonly id: number,
+    public readonly nombre_es: string,
+    public readonly apellido_es: string,
+    public readonly cedula_es: string,
+    public readonly edad_es: Date,
+    public readonly correo_es: string,
+    public readonly idDatos_personal: number,
+  ) { }
+
+  get values() {
+    const returnObj: { [key: string]: any } = {};
+
+    if (this.id) returnObj.id = this.id;
+    if (this.nombre_es) returnObj.nombre_es = this.nombre_es;
+    if (this.apellido_es) returnObj.apellido_es = this.apellido_es;
+    if (this.cedula_es) returnObj.cedula_es = this.cedula_es;
+    if (this.edad_es) returnObj.edad_es = this.edad_es;
+    if (this.correo_es) returnObj.correo_es = this.correo_es;
+    if (this.idDatos_personal) returnObj.idDatos_personal = this.idDatos_personal;
+    return returnObj;
+  }
+
+
+  static create(props: { [key: string]: any }): [string?, UpdateEstudianteDto?] {
+
+    const { id, nombre_es, apellido_es, cedula_es, edad_es, correo_es, idDatos_personal } = props;
+
+    if (!id || isNaN(Number(id))) {
+      return ['id must be a valid number'];
+    }
+
+    if (!id && !nombre_es && !apellido_es && !cedula_es && !edad_es && !correo_es && !idDatos_personal) {
+      return ['At least one property must be provided'];
+    }
+    return [undefined, new UpdateEstudianteDto(id, nombre_es, apellido_es, cedula_es, edad_es, correo_es, idDatos_personal)];
+  }
+
+
+}
