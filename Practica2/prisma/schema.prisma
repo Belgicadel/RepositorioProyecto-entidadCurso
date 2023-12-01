@@ -1,0 +1,152 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+//Tablas Estudiante, Datos Personales Estudiante y Ubicacion por Maria Baque
+model Estudiante {
+  id  Int     @id @default(autoincrement())
+  nombre_es  String 
+  apellido_es  String
+  cedula_es  String 
+  edad_es  DateTime @default(now())
+  correo_es String @unique
+  matriculas Matricula[]
+  datos_personales_es  Datos_personales_es  @relation(fields: [idDatos_personal],  references: [id])
+  idDatos_personal Int
+}
+
+model Datos_personales_es {
+  id Int @id @default(autoincrement())
+  calle String 
+  avenida String
+  telefono Int
+  ubicacion Ubicacion @relation(fields: [idUbicacion],  references: [id]) 
+  idUbicacion Int
+  estudiantes Estudiante[]
+}
+
+model Ubicacion {
+  id Int @id @default(autoincrement())
+  provincia String 
+  ciudad String
+  datos_personales_es Datos_personales_es[]
+  datos_personales_prof Datos_personal_prof[] 
+  }
+
+//Tablas Curso, Tipo Curso y Duracion Curso por Belgica Delgado
+model Curso  {
+  id  Int @id @default(autoincrement())
+  nombre_curso  String
+  matriculas  Matricula[]
+  instrumento Instrumento @relation(fields: [id_instrumento], references: [id])
+  id_instrumento Int
+  profesor  Profesor @relation(fields: [id_Profesor], references: [id])
+  id_Profesor Int
+  Tipo_curso   Tipo_curso   @relation(fields: [id_tipo_curso], references: [id])
+  id_tipo_curso Int
+  Duracion_curso  Duracion_curso @relation(fields:[id_duracur], references: [id])
+  id_duracur Int
+}
+
+model Tipo_curso {
+  id     Int     @id @default(autoincrement())
+  nombre String
+  curso            Curso[]
+}
+
+model Duracion_curso {
+  id    Int     @id @default(autoincrement())
+  cursoDuracion    Int
+  curso           Curso[]
+}
+
+//Tablas Matricula, Periodo Academico y Forma Pago por Anthony Figueroa
+model Matricula {
+  id  Int @id @default(autoincrement())
+  fecha_inscripcion DateTime @default(now())
+  estado_matricula String
+  estudiante  Estudiante  @relation(fields: [IdEstudiante], references: [id])
+  IdEstudiante  Int
+  curso  Curso  @relation(fields: [IdCurso],  references: [id])
+  IdCurso Int
+  periodo_academico Periodo_Academico @relation(fields: [IdPeriodoAc],  references: [id])
+  IdPeriodoAc Int
+  forma_pago Forma_Pago @relation(fields: [IdFormaP],  references: [id])
+  IdFormaP Int
+}
+
+model Periodo_Academico {
+  id  Int @id @default(autoincrement())
+  nombre_p_academico String
+  matricula Matricula[]
+}
+
+model Forma_Pago {
+  id  Int @id @default(autoincrement())
+  nombre_pago String
+  matricula Matricula[]
+}
+
+//Tablas Profesor, Formacion Profesional y Datos Personales Profesor por Jorge Figueroa
+model Profesor {
+  id  Int @id @default(autoincrement())
+  nombre  String
+  apellido  String
+  cedula  String
+  edad  DateTime  @default(now())
+  correo  String @unique
+  curso Curso[]
+  formacion_profecional  Formacion_profecional @relation(fields: [idFormacionprofecional], references: [id])
+  datos_personales_prof  Datos_personal_prof @relation(fields: [idDatos_personal_prof], references: [id])
+  idFormacionprofecional Int
+  idDatos_personal_prof Int
+}
+
+model Formacion_profecional {
+  id  Int @id @default(autoincrement())
+  nombre  String
+  profesor Profesor[]
+}
+
+model Datos_personal_prof {
+  id  Int @id @default(autoincrement())
+  calle  String
+  avenida  String
+  telefono  Int
+  profesor  Profesor[]
+  ubicacion Ubicacion @relation(fields: [idUbicacion],  references: [id]) 
+  idUbicacion Int
+}
+
+
+//Tablas Instrumento, Tipo de Instrumento y Categoría por Missael Quijije
+model Instrumento {
+  id    Int     @id @default(autoincrement())
+  nombre_instrumento  String  
+  tipo_instrumento Tipo_instrumento @relation(fields: [id_tipo], references: [id])
+  id_tipo Int
+  curso Curso[]
+}
+
+model Tipo_instrumento {
+  id    Int     @id @default(autoincrement())
+  instrumento Instrumento[]
+  categoria Categoria  @relation(fields: [id_Categoria], references: [id])
+  nombre_tipo_instrumento  String
+  id_instrumento Int
+  id_Categoria Int
+}
+
+model Categoria {
+  id    Int     @id @default(autoincrement())
+  nombre_categoria String  
+  tipos Tipo_instrumento[]
+}
