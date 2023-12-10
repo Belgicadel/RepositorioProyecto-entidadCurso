@@ -41,6 +41,11 @@ document.addEventListener('DOMContentLoaded', () => {
     btnDuracurso?.addEventListener('click', () => {
       renderCRUD();
     });
+
+    const btnTipocurso = document.querySelector<HTMLButtonElement>('#btnTipocurso');
+btnTipocurso?.addEventListener('click', () => {
+  renderCRUD3();
+});
     
   }
   const btnExplorarCursos = document.querySelector<HTMLButtonElement>('#btnExplorarCursos');
@@ -209,9 +214,159 @@ document.addEventListener('DOMContentLoaded', () => {
 //
 //
 //Tipocurso
+async function renderCRUD3() {
+  const response = await fetch('http://localhost:3000/api/tipoCursos');
+  const data = await response.json();
 
+  const crudStyle = `
+    <style>
+      body {
+        background-color: #6e95b7;; /* Fondo blanco */
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        margin: 0;
+      }
 
+      .container {
+        background-color: #fff;
+        color: #212529; /* Texto negro */
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      }
 
+      table {
+        width: 100%;
+        margin-bottom: 1rem;
+      }
+
+      table, th, td {
+        border: 1px solid #dee2e6; /* Color de borde más claro */
+      }
+
+      th, td {
+        padding: 10px;
+        text-align: center;
+      }
+
+      .btn {
+        margin: 5px;
+      }
+
+      .btn-agregar {
+        background-color: #007bff; /* Color azul */
+        border: none;
+      }
+
+      .btn-danger {
+        background-color: #dc3545;
+        border: none;
+      }
+
+      .btn-warning {
+        background-color: #ffc107;
+        border: none;
+      }
+    </style>
+  `;
+
+  let divTable = `<div class="container mt-5"><table class="table table-striped">`;
+divTable += `<tr><th>Id</th><th>nombre</th><th>Acciones</th></tr>`;
+data.forEach((tipocurso: Itipocurso) => {
+  divTable += `<tr><td>${tipocurso.id}</td><td>${tipocurso.nombre}</td><td><button class="btn btn-danger btn-delete">Eliminar</button></td><td><button class="btn btn-warning btn-update">Actualizar</button></td></tr>`;
+});
+divTable += `</table></div>`;
+
+  const divButton = `<div class="container mt-3"><button class="btn btn-primary btn-agregar">Agregar Nuevo Curso</button></div>`;
+
+  document.querySelector<HTMLDivElement>('#app')!.innerHTML = crudStyle + divTable + divButton;
+
+  const btnAgregar = document.querySelector<HTMLButtonElement>('.btn-agregar');
+  btnAgregar?.addEventListener('click', () => {
+    renderForm2();
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.parentElement?.parentElement?.firstElementChild?.textContent;
+      console.log(id);
+      await fetch(`http://localhost:3000/api/tipoCursos/${id}`, {
+        method: 'DELETE',
+      });
+      renderCRUD3();
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>('.btn-update').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.parentElement?.parentElement?.firstElementChild?.textContent;
+      const response = await fetch(`http://localhost:3000/api/tipoCursos/${id}`);
+      const data = await response.json();
+      const btnCancel = `<button class="btn btn-cancel">Cancel</button>`;
+      const divForm = `<form>
+        <div class="mb-3">
+          <label for="nombre" class="form-label">nombre</label>
+          <input type="text" class="form-control" id="nombre" aria-describedby="nombre" value="${data.nombre}">
+        </div>
+        
+        <button type='submit' class="btn btn-warning btn-save">Save</button>
+        ${btnCancel}
+      </form>`;
+      document.querySelector<HTMLDivElement>('#app')!.innerHTML = divForm;
+
+      const btnSave = document.querySelector<HTMLButtonElement>('.btn-save');
+      btnSave?.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const nombre = document.querySelector<HTMLInputElement>('#nombre')!.value;
+        const response = await fetch(`http://localhost:3000/api/tipoCursos/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ nombre }),
+        });
+        const data = await response.json();
+        console.log(data);
+        renderCRUD3();
+      });
+    });
+  });
+}
+
+function renderForm2() {
+  const divForm = `<form>
+    <div class="mb-3">
+      <label for="nombre" class="form-label">nombre</label>
+      <input type="text" class="form-control" id="nombre" aria-describedby="nombre">
+    </div>
+    <button type='submit' class="btn btn-success btn-save">Save</button>
+    <button type='button' class="btn btn-secondary btn-cancel">Cancel</button>
+  </form>`;
+  document.querySelector<HTMLDivElement>('#app')!.innerHTML = divForm;
+
+  const btnCancel = document.querySelector<HTMLButtonElement>('.btn-cancel');
+  btnCancel?.addEventListener('click', () => {
+    renderCRUD3();
+  });
+
+  const btnSave = document.querySelector<HTMLButtonElement>('.btn-save');
+btnSave?.addEventListener('click', async (e) => {
+e.preventDefault();
+const nombre = document.querySelector<HTMLInputElement>('#nombre')!.value;
+const response = await fetch('http://localhost:3000/api/tipoCursos/', {
+method: 'POST',
+headers: {
+  'Content-Type': 'application/json',
+},
+body: JSON.stringify({ nombre }),
+});
+const data = await response.json();
+console.log(data);
+renderCRUD3();
+})};
 
 
 
